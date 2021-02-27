@@ -55,7 +55,7 @@ Especially important since this application is targeted at children. We download
 ```
     python get_bad_word_tokens.py
 ```
-which uses the GPT-2 finetuned tokenizer (GPT-2 tokenizer + ```<BOS>```, ```<EOS>``` tokens). You only need to re-run this script if you
+which uses the GPT-2 finetuned tokenizer (GPT-2 tokenizer + ```<BOS>```, ```<EOS>```, ```<PAD>``` tokens). You only need to re-run this script if you
 use a different tokenizer, or wish to augment the existing list of bad words. If you change the name of the ```data/bad_tokens.txt``` file, you will need to modify line 12 of ```generate.py```
 
 ## Credits

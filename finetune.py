@@ -44,12 +44,8 @@ def parse_args():
     parser.add_argument("--bs", help="batch size", type=int, default=4) # 8 will OOM on 1xRTX2080
     parser.add_argument("--patience", help="patience for early stopping", type=int, default=5)
     parser.add_argument("--early_stop", help="Whether to do early stopping", action="store_true")
-    # parser.add_argument("--learning_rate", help="learning rate", type=float, default=1e-3)
     parser.add_argument("--epochs", help="num. of epochs", type=int, default=50)
     parser.add_argument("--fp16", help="use fp16", action="store_true")
-    # model params
-    # nothing for now
-
     return parser.parse_args()
 
 @dataclass
@@ -120,7 +116,6 @@ class DataTrainingArguments:
         metadata={"help": "Overwrite the cached training and evaluation sets"},
     )
 
-# Create LineByLineDataset from Movie Plots text file
 def get_dataset(
     args: DataTrainingArguments, tokenizer: PreTrainedTokenizer, evaluate=False
 ):
@@ -142,14 +137,14 @@ def main(args):
         model_name_or_path="gpt2", model_type="gpt2"
     )
     data_args = DataTrainingArguments(
-        train_data_file=args.train_data, #"scrapped.txt",
-        eval_data_file=args.eval_data, #"scrapped.txt",
+        train_data_file=args.train_data,
+        eval_data_file=args.eval_data,
         line_by_line=True,
         block_size=512,
         overwrite_cache=True,
     )
     training_args = TrainingArguments(
-        output_dir=args.ckpt_folder, # "checkpoint",
+        output_dir=args.ckpt_folder,
         overwrite_output_dir=True,
         do_train=True,
         do_eval=args.do_eval,
@@ -200,7 +195,6 @@ def main(args):
     # Set seed for deterministic training runs
     set_seed(training_args.seed)
 
-
     config = AutoConfig.from_pretrained(
         model_args.model_name_or_path, cache_dir=model_args.cache_dir
     )
@@ -236,7 +230,6 @@ def main(args):
         data_args.block_size = min(data_args.block_size, tokenizer.model_max_length)
 
     # Get datasets
-
     train_dataset = (
         get_dataset(data_args, tokenizer=tokenizer) if training_args.do_train else None
     )
@@ -261,7 +254,6 @@ def main(args):
         train_dataset=train_dataset,
         eval_dataset=eval_dataset,
         callbacks=callbacks
-        # prediction_loss_only=True,
     )
 
     # Training
@@ -302,5 +294,5 @@ def main(args):
 if __name__ == "__main__":
     cmd_args = parse_args()
     # logger.info(f'{cmd_args}')
-    os.makedirs(f'./logs/{cmd_args.expt_name}', exist_ok=True)
+
     main(cmd_args)
