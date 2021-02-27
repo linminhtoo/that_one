@@ -2,6 +2,10 @@
 For iNTUition hackathon (27-28 Feb 2021) <br>
 **Team members (That One): Leow Cong Sheng, Tay Kai Yang, Lin Min Htoo and Soo Jian Xian**
 
+## Web-app
+Check out our webapp here! [https://ta-ttletale.herokuapp.com/](https://ta-ttletale.herokuapp.com/) <br>
+![plot](./tattletale_screenshot.jfif)
+
 ## Setup instructions
 Just run 
 ```
