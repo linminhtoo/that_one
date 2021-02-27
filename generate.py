@@ -1,14 +1,9 @@
 from transformers import pipeline, TextGenerationPipeline, GPT2LMHeadModel, AutoTokenizer
 
-""" 
-Below, my model checkpoint is commented out. You can replace your checkpoint 
-with that to test story generation if your checkpoint didn't train for long enough
-"""
-#checkpoint = "pranavpsv/gpt2-genre-story-generator"
-checkpoint = "checkpoint"
+CHECKPOINT_FOLDER = "ckpt_stop3"
 
-model = GPT2LMHeadModel.from_pretrained(checkpoint)
-tokenizer = AutoTokenizer.from_pretrained(checkpoint)
+model = GPT2LMHeadModel.from_pretrained(CHECKPOINT_FOLDER)
+tokenizer = AutoTokenizer.from_pretrained(CHECKPOINT_FOLDER)
 story_generator = TextGenerationPipeline(model=model, tokenizer=tokenizer)
 # The format for input_prompt: "<BOS> <genre> Optional text..."
 # Supported genres: superhero, sci_fi, horror, thriller, action, drama

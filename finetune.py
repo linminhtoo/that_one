@@ -19,6 +19,7 @@ from transformers import (
     TrainingArguments,
     set_seed,
 )
+from transformers.trainer_callback import EarlyStoppingCallback
 
 # Setup logging
 logger = logging.getLogger(__name__)
@@ -35,9 +36,10 @@ def parse_args():
     parser.add_argument("--log_file", help="log_file", type=str, default="train")
     parser.add_argument("--train_data", help="train_data", type=str, default="data/train.txt")
     parser.add_argument("--eval_data", help="eval_data", type=str, default="data/eval.txt")
+    parser.add_argument("--ckpt_folder", help="checkpoint_folder", type=str, default="checkpoint")
     # training params
-    # parser.add_argument("--checkpoint", help="whether to save model checkpoints", action="store_true")
     parser.add_argument("--bs", help="batch size", type=int, default=4)
+    parser.add_argument("--patience", help="patience for early stopping", type=int, default=3)
     # parser.add_argument("--learning_rate", help="learning rate", type=float, default=1e-3)
     parser.add_argument("--epochs", help="num. of epochs", type=int, default=50)
     # model params
@@ -142,7 +144,7 @@ def main(args):
         overwrite_cache=True,
     )
     training_args = TrainingArguments(
-        output_dir="checkpoint",
+        output_dir=args.ckpt_folder, # "checkpoint",
         overwrite_output_dir=True,
         do_train=True,
         do_eval=True,
@@ -150,7 +152,9 @@ def main(args):
         per_device_train_batch_size=args.bs,
         num_train_epochs=args.epochs,
         save_total_limit=1,
-        save_steps=1000,
+        # save_steps=1000, # ignored by load_best_model_at_end
+        load_best_model_at_end=True,
+        evaluation_strategy='epoch'
     )
 
     if data_args.eval_data_file is None and training_args.do_eval:
@@ -245,6 +249,7 @@ def main(args):
         data_collator=data_collator,
         train_dataset=train_dataset,
         eval_dataset=eval_dataset,
+        callbacks=[EarlyStoppingCallback(early_stopping_patience=args.patience)]
         # prediction_loss_only=True,
     )
 
@@ -290,6 +295,6 @@ def main(args):
 
 if __name__ == "__main__":
     cmd_args = parse_args()
-    logger.info(f'{cmd_args}')
+    # logger.info(f'{cmd_args}')
 
     main(cmd_args)
