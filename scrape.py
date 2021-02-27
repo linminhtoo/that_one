@@ -10,6 +10,7 @@ from tqdm import tqdm
 
 SEED = 1337
 TRAIN_RATIO = 0.8 # EVAL_RATIO = 1 - TRAIN_RATIO
+MAX_LEN = 1024
 random.seed(SEED)
 
 # format is: Tuple[link, pointer_for_posts, pointer_for_sentences]
@@ -21,7 +22,7 @@ for page_no in range(1, 25): # have to do it this way bcos this website has 24 p
     links_and_divs.append((link, {"class" : "column margin50"}, {"class" : "entry-content"}))
 
 def scrape_one_link(link_n_div):
-    print(f'Scraping {link_n_div[0]}')
+    # print(f'Scraping {link_n_div[0]}')
     req = Request(link_n_div[0], headers={'User-Agent': 'Mozilla/5.0'}) # Only looking at home page
 
     page = urlopen(req).read()
@@ -31,14 +32,13 @@ def scrape_one_link(link_n_div):
     # passage = ""
     counter = 0
     all_passages = []
-    for post in posts: #desc='Scraping each story'):
+    for post in tqdm(posts, desc=f'Scraping {link_n_div[0]}'):
         counter += 1
-        # curr_passage = "<BOS> "
         curr_passage = ""
         url = post.a['href']
         if "javascript" in url: # Removing interactive and videos
             continue
-        print(url)
+        # print(url)
         currReq = Request(url,headers={'User-Agent': 'Mozilla/5.0'})
         pageLink = urlopen(currReq).read()
         soupLink = BeautifulSoup(pageLink, features="html.parser")
@@ -46,14 +46,35 @@ def scrape_one_link(link_n_div):
         for sentence in sentences:
             curr_passage += sentence.text
         if curr_passage:
-            curr_passage = "<BOS> " + curr_passage + " <EOS>"
-
             # remove some special characters
             curr_passage = curr_passage.replace('\n',' ')
             curr_passage = curr_passage.replace('\xa0','')
-            curr_passage = curr_passage.replace('><','> <')
-            
-            all_passages.append(curr_passage)
+
+            curr_passage = curr_passage.replace('Mr.', 'Mr,')
+            curr_passage = curr_passage.replace('Mrs.', 'Mrs,')
+            curr_passage = curr_passage.replace('Ms.', 'Ms,')
+
+            # curr_passage = "<BOS> " + curr_passage + " <EOS>"
+            start, end = 0, MAX_LEN
+            trimmed = ""
+            curr_len = len(curr_passage)
+            banned = set(["”", "’"]) # if fullstop is immediately followed by either of these, the sentence hasn't ended yet
+            while curr_len > MAX_LEN:
+                if curr_passage[end - 1] == '.' and curr_passage[end] not in banned:
+                    trimmed += "<BOS> " + curr_passage[start:end] + " <EOS>"
+                    curr_passage = curr_passage[end:]
+                    curr_len = len(curr_passage)
+                    end = 1024
+                else:
+                    end -= 1
+
+            if curr_passage:
+                trimmed += "<BOS> " + curr_passage + " <EOS>"
+            trimmed = trimmed.replace("><", "> <")
+            trimmed = trimmed.replace('Mr,', 'Mr.')
+            trimmed = trimmed.replace('Mrs,', 'Mrs.')
+            trimmed = trimmed.replace('Ms,', 'Ms.')
+            all_passages.append(trimmed)
     return all_passages
 
 def main():
@@ -75,17 +96,22 @@ def main():
     train = passages[:int(TRAIN_RATIO * len(passages))]
     eval = passages[int(TRAIN_RATIO * len(passages)):]
 
-    text_file = open("data/train.txt", "w")
+    text_file = open("data/train_1024.txt", "w")
     text_file.write(' '.join(train))
     text_file.close()
 
-    text_file = open("data/eval.txt", "w")
+    text_file = open("data/eval_1024.txt", "w")
     text_file.write(' '.join(eval))
     text_file.close()
 
     print(f'Total time elapsed: {time.time() - start}')
-
-print('Finished saving as train.txt & eval.txt')
+    print('Finished saving as train.txt & eval.txt')
 
 if __name__ == '__main__':
-    main() # taks 50 seconds for 24+1 websites, total 288+79 = 367 stories
+    main() 
+    # old code: without splitting into 1024-char sentences
+    # taks 50 seconds for 24+1 websites, total 288+79 = 367 stories, parallelized on 16 cores
+
+    # new code: with splitting (backtracking algorithm)
+    # takes 48 seconds for 24+1 websites, total 288+79 = 367 stories, parallelized on 24 cores. Nice!
+    # got total of ~3.8k sequences (each ~1024 characters long and are in complete sentences)

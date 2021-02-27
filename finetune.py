@@ -4,6 +4,7 @@ import math
 import os
 from dataclasses import dataclass, field
 from typing import Optional
+from datetime import datetime
 
 from transformers import (
     CONFIG_MAPPING,
@@ -31,7 +32,7 @@ MODEL_TYPES = tuple(conf.model_type for conf in MODEL_CONFIG_CLASSES)
 def parse_args():
     parser = argparse.ArgumentParser("finetune.py")
     # mode & metadata
-    parser.add_argument("--expt_name", help="experiment name", type=str, default="")
+    parser.add_argument("--expt_name", help="experiment name", type=str, default=datetime.strftime(datetime.now(), "%y%m%d-%H%Mh"))
     # file names
     parser.add_argument("--log_file", help="log_file", type=str, default="train")
     parser.add_argument("--train_data", help="train_data", type=str, default="data/train.txt")
@@ -149,8 +150,8 @@ def main(args):
         overwrite_output_dir=True,
         do_train=True,
         do_eval=True,
-        logging_steps=500,
-        logging_dir='./logs', # directory for storing logs
+        logging_steps=200,
+        logging_dir=f'logs/{args.expt_name}', # directory for storing logs
         per_device_train_batch_size=args.bs,
         num_train_epochs=args.epochs,
         # save_total_limit=1, # what's the use of this
@@ -275,7 +276,6 @@ def main(args):
       return
 
     # Evaluation
-    # results = {}
     if training_args.do_eval:
         logger.info("*** Evaluate ***")
 
@@ -285,16 +285,12 @@ def main(args):
         result = {"perplexity": perplexity}
 
         output_eval_file = os.path.join(training_args.output_dir, "eval_results_lm.txt")
-        if trainer.is_world_process_zero(): # change from is_world_master()
+        if trainer.is_world_process_zero():
             with open(output_eval_file, "w") as writer:
                 logger.info("***** Eval results *****")
                 for key in sorted(result.keys()):
                     logger.info("  %s = %s", key, str(result[key]))
                     writer.write("%s = %s\n" % (key, str(result[key])))
-
-    #     results.update(result)
-
-    # return results
 
 if __name__ == "__main__":
     cmd_args = parse_args()
