@@ -17,3 +17,7 @@ story = story_generator(input_prompt, max_length=200, do_sample=True,
 
 print(story)
 print(f'Time elapsed: {time.time() - start}')
+
+'''
+input prompts:
+Knock knock.

@@ -61,7 +61,7 @@ def scrape_one_link(link_n_div):
             banned = set(["”", "’"]) # if fullstop is immediately followed by either of these, the sentence hasn't ended yet
             while curr_len > MAX_LEN:
                 if curr_passage[end - 1] == '.' and curr_passage[end] not in banned:
-                    trimmed += "<BOS> " + curr_passage[start:end] + " <EOS>"
+                    trimmed += "<BOS> " + curr_passage[start:end] + " <EOS>\n"
                     curr_passage = curr_passage[end:]
                     curr_len = len(curr_passage)
                     end = MAX_LEN
@@ -69,7 +69,7 @@ def scrape_one_link(link_n_div):
                     end -= 1
 
             if curr_passage:
-                trimmed += "<BOS> " + curr_passage + " <EOS>"
+                trimmed += "<BOS> " + curr_passage + " <EOS>\n"
             trimmed = trimmed.replace("><", "> <")
             trimmed = trimmed.replace('Mr,', 'Mr.')
             trimmed = trimmed.replace('Mrs,', 'Mrs.')
@@ -96,16 +96,16 @@ def main():
     train = passages[:int(TRAIN_RATIO * len(passages))]
     eval = passages[int(TRAIN_RATIO * len(passages)):]
 
-    text_file = open(f"data/train_{MAX_LEN}.txt", "w")
+    text_file = open(f"data/train_{MAX_LEN}_n.txt", "w")
     text_file.write(' '.join(train))
     text_file.close()
 
-    text_file = open(f"data/eval_{MAX_LEN}.txt", "w")
+    text_file = open(f"data/eval_{MAX_LEN}_n.txt", "w")
     text_file.write(' '.join(eval))
     text_file.close()
 
     print(f'Total time elapsed: {time.time() - start}')
-    print('Finished saving as train.txt & eval.txt')
+    print('Finished saving train & eval text files in ./data/')
 
 if __name__ == '__main__':
     main() 
