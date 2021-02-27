@@ -33,14 +33,15 @@ def parse_args():
     parser = argparse.ArgumentParser("finetune.py")
     # mode & metadata
     parser.add_argument("--expt_name", help="experiment name", type=str, default=datetime.strftime(datetime.now(), "%y%m%d-%H%Mh"))
+    parser.add_argument("--local_rank", help="local rank for distributed training", type=int, default=-1)
     # file names
     parser.add_argument("--log_file", help="log_file", type=str, default="train")
-    parser.add_argument("--train_data", help="train_data", type=str, default="data/train.txt")
-    parser.add_argument("--eval_data", help="eval_data", type=str, default="data/eval.txt")
+    parser.add_argument("--train_data", help="train_data", type=str, default="data/train_1024.txt")
+    parser.add_argument("--eval_data", help="eval_data", type=str, default="data/eval_1024.txt")
     parser.add_argument("--ckpt_folder", help="checkpoint_folder", type=str, default="checkpoints/ckpt")
     # training params
     parser.add_argument("--bs", help="batch size", type=int, default=4) # 8 will OOM on 1xRTX2080
-    parser.add_argument("--patience", help="patience for early stopping", type=int, default=3)
+    parser.add_argument("--patience", help="patience for early stopping", type=int, default=5)
     # parser.add_argument("--learning_rate", help="learning rate", type=float, default=1e-3)
     parser.add_argument("--epochs", help="num. of epochs", type=int, default=50)
     parser.add_argument("--fp16", help="use fp16", action="store_true")
@@ -141,7 +142,7 @@ def main(args):
     data_args = DataTrainingArguments(
         train_data_file=args.train_data, #"scrapped.txt",
         eval_data_file=args.eval_data, #"scrapped.txt",
-        line_by_line=False,
+        line_by_line=True,
         block_size=512,
         overwrite_cache=True,
     )
@@ -151,14 +152,15 @@ def main(args):
         do_train=True,
         do_eval=True,
         logging_steps=200,
-        logging_dir=f'logs/{args.expt_name}', # directory for storing logs
+        logging_dir=f'./logs/{args.expt_name}', # directory for storing logs
         per_device_train_batch_size=args.bs,
         num_train_epochs=args.epochs,
-        # save_total_limit=1, # what's the use of this
+        save_total_limit=1,
         # save_steps=1000, # ignored by load_best_model_at_end
         load_best_model_at_end=True,
         evaluation_strategy='epoch',
-        fp16=args.fp16
+        fp16=args.fp16,
+        local_rank=args.local_rank
     )
 
     if data_args.eval_data_file is None and training_args.do_eval:
@@ -295,5 +297,5 @@ def main(args):
 if __name__ == "__main__":
     cmd_args = parse_args()
     # logger.info(f'{cmd_args}')
-
+    os.makedirs(f'./logs/{cmd_args.expt_name}', exist_ok=True)
     main(cmd_args)

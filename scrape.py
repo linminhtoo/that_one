@@ -64,7 +64,7 @@ def scrape_one_link(link_n_div):
                     trimmed += "<BOS> " + curr_passage[start:end] + " <EOS>"
                     curr_passage = curr_passage[end:]
                     curr_len = len(curr_passage)
-                    end = 1024
+                    end = MAX_LEN
                 else:
                     end -= 1
 
@@ -96,11 +96,11 @@ def main():
     train = passages[:int(TRAIN_RATIO * len(passages))]
     eval = passages[int(TRAIN_RATIO * len(passages)):]
 
-    text_file = open("data/train_1024.txt", "w")
+    text_file = open(f"data/train_{MAX_LEN}.txt", "w")
     text_file.write(' '.join(train))
     text_file.close()
 
-    text_file = open("data/eval_1024.txt", "w")
+    text_file = open(f"data/eval_{MAX_LEN}.txt", "w")
     text_file.write(' '.join(eval))
     text_file.close()
 
