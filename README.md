@@ -29,20 +29,21 @@ Run
 Feel free to add more weblinks to scrape. See the code for more details, but the format is: Tuple[link, pointer_for_posts, pointer_for_sentences]
 
 ## Finetuning
-It takes ~5 minutes to finetune for 3 epochs on 1xRTX2080. This gave us the best validation loss given our dataset, which is, admittedly, a little small.
+It takes ~5 minutes to finetune for 3 epochs on 1xRTX2080 using fp16 (mixed precision training). With full precision, it is almost 2x slower. Just 3 epochs of training gave us the best validation loss given our dataset, which is, admittedly, a little small, but works well enough for a proof of concept.
 See finetune.py for detailed arguments
 ```
-    python finetune.py --epochs 30 --patience 3 \
-        --train_data 'data/train_1024.txt' --eval_data 'data/eval_1024.txt' \
-        --ckpt_folder 'checkpoints/finetune'
+    python finetune.py \
+        --fp16 --epochs 10 --patience 3 \
+        --train_data 'data/train_1024_n_80.txt' --eval_data 'data/eval_1024_n_80.txt' \
+        --ckpt_folder 'checkpoints/curr_best'
 ```
 To do distributed training over multiple GPUs (replace $N_GPUS with the total number of GPUs per node)
 ```
 python -m torch.distributed.launch \
     --nproc_per_node $N_GPUS finetune.py \
-    --epochs 30 --early_stop --patience 3 \
-    --train_data 'data/train_1024.txt' --eval_data 'data/eval_1024.txt' \
-    --ckpt_folder 'checkpoints/finetune'
+    --fp16 --epochs 10 --early_stop --patience 3 \
+    --train_data 'data/train_1024_n_80.txt' --eval_data 'data/eval_1024_n_80.txt' \
+    --ckpt_folder 'checkpoints/curr_best'
 ```
 
 ## Generation
