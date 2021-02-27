@@ -96,11 +96,11 @@ def main():
     train = passages[:int(TRAIN_RATIO * len(passages))]
     eval = passages[int(TRAIN_RATIO * len(passages)):]
 
-    text_file = open(f"data/train_{MAX_LEN}_n.txt", "w")
+    text_file = open(f"data/train_{MAX_LEN}_n_{int(TRAIN_RATIO*100)}.txt", "w")
     text_file.write(' '.join(train))
     text_file.close()
 
-    text_file = open(f"data/eval_{MAX_LEN}_n.txt", "w")
+    text_file = open(f"data/eval_{MAX_LEN}_n_{int(TRAIN_RATIO*100)}.txt", "w")
     text_file.write(' '.join(eval))
     text_file.close()
 

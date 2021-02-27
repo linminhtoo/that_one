@@ -34,14 +34,16 @@ def parse_args():
     # mode & metadata
     parser.add_argument("--expt_name", help="experiment name", type=str, default=datetime.strftime(datetime.now(), "%y%m%d-%H%Mh"))
     parser.add_argument("--local_rank", help="local rank for distributed training", type=int, default=-1)
+    parser.add_argument("--do_eval", help="Whether to do evaluation", action="store_true")
     # file names
     parser.add_argument("--log_file", help="log_file", type=str, default="train")
-    parser.add_argument("--train_data", help="train_data", type=str, default="data/train_1024_n.txt")
-    parser.add_argument("--eval_data", help="eval_data", type=str, default="data/eval_1024_n.txt")
+    parser.add_argument("--train_data", help="train_data", type=str, default="data/train_1024_n_80.txt")
+    parser.add_argument("--eval_data", help="eval_data", type=str, default="data/eval_1024_n_80.txt")
     parser.add_argument("--ckpt_folder", help="checkpoint_folder", type=str, default="checkpoints/ckpt")
     # training params
     parser.add_argument("--bs", help="batch size", type=int, default=4) # 8 will OOM on 1xRTX2080
     parser.add_argument("--patience", help="patience for early stopping", type=int, default=5)
+    parser.add_argument("--early_stop", help="Whether to do early stopping", action="store_true")
     # parser.add_argument("--learning_rate", help="learning rate", type=float, default=1e-3)
     parser.add_argument("--epochs", help="num. of epochs", type=int, default=50)
     parser.add_argument("--fp16", help="use fp16", action="store_true")
@@ -150,9 +152,8 @@ def main(args):
         output_dir=args.ckpt_folder, # "checkpoint",
         overwrite_output_dir=True,
         do_train=True,
-        do_eval=True,
+        do_eval=args.do_eval,
         logging_steps=200,
-        logging_dir=f'./logs/{args.expt_name}', # directory for storing logs
         per_device_train_batch_size=args.bs,
         num_train_epochs=args.epochs,
         save_total_limit=1,
@@ -161,6 +162,7 @@ def main(args):
         evaluation_strategy='epoch',
         fp16=args.fp16,
         local_rank=args.local_rank
+        # deepspeed=True # doesnt work
     )
 
     if data_args.eval_data_file is None and training_args.do_eval:
@@ -249,13 +251,16 @@ def main(args):
     )
 
     # Initialize our Trainer
+    callbacks = []
+    if args.early_stop:
+        callbacks.append(EarlyStoppingCallback(early_stopping_patience=args.patience))
     trainer = Trainer(
         model=model,
         args=training_args,
         data_collator=data_collator,
         train_dataset=train_dataset,
         eval_dataset=eval_dataset,
-        callbacks=[EarlyStoppingCallback(early_stopping_patience=args.patience)]
+        callbacks=callbacks
         # prediction_loss_only=True,
     )
 

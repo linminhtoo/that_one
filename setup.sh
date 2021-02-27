@@ -3,3 +3,8 @@ conda create -n tattletale python=3.7 -y
 conda activate tattletale
 
 pip install transformers torch
+pip install beautifulsoup4
+
+# mpich/ge/gcc/64/3.1
+# pip install mpi4py
+# pip install deepspeed
