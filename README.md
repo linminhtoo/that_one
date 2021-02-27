@@ -4,7 +4,11 @@ For iNTUition hackathon (27-28 Feb 2021) <br>
 
 ## Web-app
 Check out our webapp here! [https://ta-ttletale.herokuapp.com/](https://ta-ttletale.herokuapp.com/) <br>
-![plot](./tattletale_screenshot.jfif)
+
+<p align="center">
+  <img src="tattletale_screenshot.jfif?raw=true" alt="webapp screenshot 1" width=45%>
+</p>
+
 
 ## Setup instructions
 Just run 
