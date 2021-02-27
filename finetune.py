@@ -1,4 +1,5 @@
 import logging
+import argparse
 import math
 import os
 from dataclasses import dataclass, field
@@ -25,6 +26,25 @@ logger = logging.getLogger(__name__)
 # Get access to model types and model configs to select GPT2 model and config
 MODEL_CONFIG_CLASSES = list(MODEL_WITH_LM_HEAD_MAPPING.keys())
 MODEL_TYPES = tuple(conf.model_type for conf in MODEL_CONFIG_CLASSES)
+
+def parse_args():
+    parser = argparse.ArgumentParser("finetune.py")
+    # mode & metadata
+    parser.add_argument("--expt_name", help="experiment name", type=str, default="")
+    # file names
+    parser.add_argument("--log_file", help="log_file", type=str, default="train")
+    parser.add_argument("--train_data", help="train_data", type=str, default="train.txt")
+    parser.add_argument("--eval_data", help="eval_data", type=str, default="eval.txt")
+    # training params
+    # parser.add_argument("--checkpoint", help="whether to save model checkpoints", action="store_true")
+    # parser.add_argument("--random_seed", help="random seed", type=int, default=0)
+    parser.add_argument("--bs", help="batch size", type=int, default=4)
+    # parser.add_argument("--learning_rate", help="learning rate", type=float, default=1e-3)
+    parser.add_argument("--epochs", help="num. of epochs", type=int, default=50)
+    # model params
+    # nothing for now
+
+    return parser.parse_args()
 
 @dataclass
 class ModelArguments:
@@ -111,13 +131,13 @@ def get_dataset(
             overwrite_cache=args.overwrite_cache,
         )
 
-def main():
+def main(args):
     model_args = ModelArguments(
         model_name_or_path="gpt2", model_type="gpt2"
     )
     data_args = DataTrainingArguments(
-        train_data_file="scrapped.txt",
-        eval_data_file="scrapped.txt",
+        train_data_file=args.train_data, #"scrapped.txt",
+        eval_data_file=args.eval_data, #"scrapped.txt",
         line_by_line=True,
         block_size=512,
         overwrite_cache=True,
@@ -127,10 +147,9 @@ def main():
         overwrite_output_dir=True,
         do_train=True,
         do_eval=True,
-        # evaluate_during_training=False, # not valid argument? maybe huggingface updated
         logging_steps=500,
-        per_device_train_batch_size=4,
-        num_train_epochs=50,
+        per_device_train_batch_size=args.bs,
+        num_train_epochs=args.epochs,
         save_total_limit=1,
         save_steps=1000,
     )
@@ -249,7 +268,7 @@ def main():
       return
 
     # Evaluation
-    results = {}
+    # results = {}
     if training_args.do_eval:
         logger.info("*** Evaluate ***")
 
@@ -266,10 +285,12 @@ def main():
                     logger.info("  %s = %s", key, str(result[key]))
                     writer.write("%s = %s\n" % (key, str(result[key])))
 
-        results.update(result)
+    #     results.update(result)
 
-    return results
+    # return results
 
 if __name__ == "__main__":
-    results = main()
-    print(results)
+    args = parse_args()
+    logger.info(f'{args}')
+
+    main(args)
