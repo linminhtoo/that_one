@@ -12,6 +12,7 @@ The contents:
     conda activate that_one
 
     pip install transformers torch
+    pip install beautifulsoup4
 ```
 
 ## Finetuning

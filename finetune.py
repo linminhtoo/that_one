@@ -208,9 +208,9 @@ def main(args):
         "bos_token": "<BOS>",
         "eos_token": "<EOS>",
         "pad_token": "<PAD>",
-        "additional_special_tokens": [
-            "<story>"
-        ],
+        # "additional_special_tokens": [
+        #     "<story>"
+        # ],
     }
 
     num_added_toks = tokenizer.add_special_tokens(special_tokens_dict)
