@@ -15,7 +15,7 @@ The contents:
 ```
 
 ## Finetuning
-Note: train.txt & eval.txt must be in the same folder as finetune.py
+Note: still splitting scrapped.txt into train.txt & eval.txt
 ```
-    python finetune.py --epochs 50 --train_data train.txt --eval_data eval.txt
+    python finetune.py --epochs 50 --train_data 'data/train.txt' --eval_data 'data/eval.txt'
 ```

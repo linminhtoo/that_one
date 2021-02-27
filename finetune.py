@@ -33,11 +33,10 @@ def parse_args():
     parser.add_argument("--expt_name", help="experiment name", type=str, default="")
     # file names
     parser.add_argument("--log_file", help="log_file", type=str, default="train")
-    parser.add_argument("--train_data", help="train_data", type=str, default="train.txt")
-    parser.add_argument("--eval_data", help="eval_data", type=str, default="eval.txt")
+    parser.add_argument("--train_data", help="train_data", type=str, default="data/train.txt")
+    parser.add_argument("--eval_data", help="eval_data", type=str, default="data/eval.txt")
     # training params
     # parser.add_argument("--checkpoint", help="whether to save model checkpoints", action="store_true")
-    # parser.add_argument("--random_seed", help="random seed", type=int, default=0)
     parser.add_argument("--bs", help="batch size", type=int, default=4)
     # parser.add_argument("--learning_rate", help="learning rate", type=float, default=1e-3)
     parser.add_argument("--epochs", help="num. of epochs", type=int, default=50)
@@ -290,7 +289,7 @@ def main(args):
     # return results
 
 if __name__ == "__main__":
-    args = parse_args()
-    logger.info(f'{args}')
+    cmd_args = parse_args()
+    logger.info(f'{cmd_args}')
 
-    main(args)
+    main(cmd_args)
