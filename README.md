@@ -9,6 +9,18 @@ Check out our webapp here! [https://ta-ttletale.herokuapp.com/](https://ta-ttlet
   <img src="tattletale_screenshot.jfif?raw=true" alt="webapp screenshot 1" width=45%>
 </p>
 
+## What? <br>
+We hope to increase the accessibility and exposure to reading in developing countries.<br>
+<br>
+
+## Why? <br>
+Because, we strongly believe that education is a social leveller. Reading books and stories have tremendous impacts on cognitive and linguistics development which can be difficult to access for the illiterate.<br>
+<br>
+
+## How? <br>
+We utilized the GPT-2 language model for story generation through a simple, no-frill web application. To bias the model to generate children's stories, we finetuned the model on a dataset of children's stories that we scraped from the Web. <br>
+Frontend: [https://github.com/xfated/intuitive](https://github.com/xfated/intuitive) <br> 
+Backend: [https://github.com/linminhtoo/that_one](https://github.com/linminhtoo/that_one) 
 
 ## Setup instructions
 Just run 
@@ -71,7 +83,7 @@ use a different tokenizer, or wish to augment the existing list of bad words. If
 Base code was adapted from [this Towards Data Science article](https://towardsdatascience.com/generate-fresh-movie-stories-for-your-favorite-genre-with-deep-learning-143da14b29d6)
 
 367 children's stories were scraped from two websites:
-[Tonight Bedtime Story]("https://www.tonightsbedtimestory.com/stories/")
-[Student UK Bedtime Stories]("https://www.studentuk.com/category/bedtime-stories/")
+- [Tonight Bedtime Story](https://www.tonightsbedtimestory.com/stories/)
+- [Student UK Bedtime Stories](https://www.studentuk.com/category/bedtime-stories/)
 
 Bad words were downloaded from [Carnegie-Mellon University's Computer Science website](https://www.cs.cmu.edu/~biglou/resources/bad-words.txt)
