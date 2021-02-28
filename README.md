@@ -55,7 +55,7 @@ See finetune.py for detailed arguments
 ```
 To do distributed training over multiple GPUs (replace $N_GPUS with the total number of GPUs per node)
 ```
-  python -m torch.distributed.launch \
+    python -m torch.distributed.launch \
         --nproc_per_node $N_GPUS finetune.py \
         --fp16 --epochs 10 --early_stop --patience 3 \
         --train_data 'data/train_1024_n_80.txt' --eval_data 'data/eval_1024_n_80.txt' \
