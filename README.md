@@ -2,6 +2,10 @@
 For iNTUition hackathon (27-28 Feb 2021) <br>
 **Team members (That One): Leow Cong Sheng, Tay Kai Yang, Lin Min Htoo and Soo Jian Xian**
 
+**Slide Deck:**: [https://drive.google.com/file/d/1tt3_8DVBHQjPIkl-QvzQEOXdynA335rZ/view?usp=sharing](https://drive.google.com/file/d/1tt3_8DVBHQjPIkl-QvzQEOXdynA335rZ/view?usp=sharing) <br>
+**Video Pitch**: [https://youtu.be/cFYOaKjbBs4](https://youtu.be/cFYOaKjbBs4) <br>
+**Dev Post**: [https://devpost.com/software/tattletale](https://devpost.com/software/tattletale) <br>
+
 ## Web-app
 Check out our webapp here! [https://ta-ttletale.herokuapp.com/](https://ta-ttletale.herokuapp.com/) <br>
 
