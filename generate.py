@@ -3,7 +3,7 @@ import torch
 import numpy as np
 from transformers import pipeline, TextGenerationPipeline, GPT2LMHeadModel, AutoTokenizer
 
-CHECKPOINT_FOLDER = "checkpoints/curr_best" # curr_best = 1024_4gpu_pat7_n # 'gpt2'
+CHECKPOINT_FOLDER = "checkpoints/curr_best" # curr_best = nolimit_pat3 # 'gpt2'
 
 def gen_story(input_prompt):
     model = GPT2LMHeadModel.from_pretrained(CHECKPOINT_FOLDER)

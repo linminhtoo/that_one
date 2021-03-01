@@ -37,12 +37,12 @@ def parse_args():
     parser.add_argument("--do_eval", help="Whether to do evaluation", action="store_true")
     # file names
     parser.add_argument("--log_file", help="log_file", type=str, default="train")
-    parser.add_argument("--train_data", help="train_data", type=str, default="data/train_1024_n_80.txt")
-    parser.add_argument("--eval_data", help="eval_data", type=str, default="data/eval_1024_n_80.txt")
+    parser.add_argument("--train_data", help="train_data", type=str, default="data/train_n_80.txt") # "data/train_1024_n_80.txt" # train_n_noBOS_80
+    parser.add_argument("--eval_data", help="eval_data", type=str, default="data/eval_n_80.txt") # "data/eval_1024_n_80.txt"
     parser.add_argument("--ckpt_folder", help="checkpoint_folder", type=str, default="checkpoints/ckpt")
     # training params
     parser.add_argument("--bs", help="batch size", type=int, default=4) # 8 will OOM on 1xRTX2080
-    parser.add_argument("--patience", help="patience for early stopping", type=int, default=5)
+    parser.add_argument("--patience", help="patience for early stopping", type=int, default=3)
     parser.add_argument("--early_stop", help="Whether to do early stopping", action="store_true")
     parser.add_argument("--epochs", help="num. of epochs", type=int, default=50)
     parser.add_argument("--fp16", help="use fp16", action="store_true")
